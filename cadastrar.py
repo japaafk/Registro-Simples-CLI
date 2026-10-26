@@ -20,3 +20,6 @@ def CadastroUsuario():
         conexao.commit()
     except (KeyboardInterrupt, EOFError):
         print('Cadastro cancelado pelo usuário')
+    finally:
+        print('\n-----------------------------')
+        print('Encerrando sessão de cadastro')
