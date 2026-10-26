@@ -1,5 +1,6 @@
 from cadastrar import CadastroUsuario
 from listagem import ListarUsuarios
+from alterarConta import AlterarUsuario
 
 texto = 'CADASTRO DE USUÁRIO'
 print('-'*25)
@@ -16,5 +17,7 @@ Digite sua resposta: ''').lower()
 match escolha:
     case '1' | 'cadastrar usuario':
         CadastroUsuario()
+    case '2' | 'alterar usuario':
+        AlterarUsuario()
     case '4' | 'listar usuarios':
         ListarUsuarios()
