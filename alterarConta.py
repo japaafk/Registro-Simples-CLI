@@ -13,6 +13,8 @@ def AlterarUsuario():
     for conta in contas:
         print(f' - {conta[0]}')
 
+    print('\n')
+
     # VALIDAÇÃO DAS CREDENCIAIS DO USUÁRIO
     id = ValidarUsuario()
     identificador = id[0]
@@ -33,8 +35,9 @@ def AlterarUsuario():
                     print('\nConfirme essa alteração digitando sua senha')
                     senha = input('Senha: ')
                     cursor.execute('SELECT user_password FROM user WHERE id = ?', id)
-                    senha_bd = cursor.fetchone()
-                    while senha_bd[0] != senha:
+                    senha_tupla = cursor.fetchone()
+                    senha_bd = senha_tupla[0]
+                    while senha_bd != senha:
                         senha = input('\nSenha incorreta. Digite-a novamente para que possamos confirmar as alterações \nSenha: ')
                     print('Senha confirmada!')
                     print('\nConfirmando alterações...')
@@ -43,8 +46,7 @@ def AlterarUsuario():
                     print('Alterações salvas!')
                 except (KeyboardInterrupt, EOFError):
                     print('Alteração interrompida')
-                finally:
-                    print('\nRetornando para o menu principal...\n')
+                    
             case '2' | 'senha':
                 try:
                     senha = input('Insira sua nova senha: ')
@@ -62,10 +64,9 @@ def AlterarUsuario():
                         print('Alteração cancelada pelo usuário')
                 except (KeyboardInterrupt, EOFError):
                     print('\nAlteração interrompida')
-                finally:
-                    print('\nRetornando para o menu principal...\n')
+        
             case '0' | 'Cancelar alteração':
                 print('Alteração cancelada')
-                print('\nRetornando para o menu principal...\n')
             case _:
                     print('Forneça uma resposta válida!')
+    print('\nRetornando para o menu principal...\n')
