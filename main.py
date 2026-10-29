@@ -1,7 +1,10 @@
-from src.cadastrar import CadastroUsuario
-from src.listagem import ListarUsuarios
-from src.alterarConta import AlterarUsuario
-from src.deletarUsuario import RemoverUsuario
+from repositories.cadastrar import CadastroUsuario
+from repositories.listagem import ListarUsuarios
+from repositories.alterarConta import AlterarUsuario
+from repositories.deletarUsuario import RemoverUsuario
+from database.conexao import InicializarBanco
+
+InicializarBanco()
 
 texto = 'CADASTRO DE USUÁRIO'
 print('-'*25)
