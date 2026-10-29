@@ -1,6 +1,7 @@
 from cadastrar import CadastroUsuario
 from listagem import ListarUsuarios
 from alterarConta import AlterarUsuario
+from deletarUsuario import RemoverUsuario
 
 texto = 'CADASTRO DE USUÁRIO'
 print('-'*25)
@@ -19,5 +20,7 @@ match escolha:
         CadastroUsuario()
     case '2' | 'alterar usuario':
         AlterarUsuario()
+    case '3' | 'remover usuario':
+        RemoverUsuario()
     case '4' | 'listar usuarios':
         ListarUsuarios()
