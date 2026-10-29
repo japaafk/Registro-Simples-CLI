@@ -1,5 +1,5 @@
-from conexao import PegarConexao
-from validacaoConta import ValidarUsuario
+from src.conexao import PegarConexao
+from src.validacaoConta import ValidarUsuario
 
 conexao = PegarConexao()
 cursor = conexao.cursor()

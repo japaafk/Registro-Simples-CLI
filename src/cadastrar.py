@@ -1,4 +1,4 @@
-from conexao import PegarConexao
+from src.conexao import PegarConexao
 
 conexao = PegarConexao()
 cursor = conexao.cursor()

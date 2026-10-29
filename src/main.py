@@ -1,7 +1,7 @@
-from cadastrar import CadastroUsuario
-from listagem import ListarUsuarios
-from alterarConta import AlterarUsuario
-from deletarUsuario import RemoverUsuario
+from src.cadastrar import CadastroUsuario
+from src.listagem import ListarUsuarios
+from src.alterarConta import AlterarUsuario
+from src.deletarUsuario import RemoverUsuario
 
 texto = 'CADASTRO DE USUÁRIO'
 print('-'*25)
