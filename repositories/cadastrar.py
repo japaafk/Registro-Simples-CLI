@@ -31,5 +31,4 @@ def CadastroUsuario():
         print('Cadastro cancelado pelo usuário')
     finally:
         cursor.close()
-        print('\n-----------------------------')
-        print('Encerrando sessão de cadastro')
+        print('Encerrando sessão de cadastro...\n')

@@ -5,7 +5,7 @@ conexao = PegarConexao()
 
 def RemoverUsuario():
     cursor = conexao.cursor()
-    print('------------------')
+    print('\n------------------')
     print('REMOÇÃO DE USUÁRIO')
     print('------------------\n')
     
@@ -18,8 +18,8 @@ def RemoverUsuario():
         print('------------------')
         for conta in contas:
             print(f' - {conta[0]}')
-        print('Não encontrou seu nome aqui?!')
-        load_users = input('Quer acessar a próxima página de usuários? (s/n)')
+        print('\nNão encontrou seu nome aqui?!')
+        load_users = input('Quer acessar a próxima página de usuários? (s/n) \nResposta: ').strip().lower()
         if load_users == 'n':
             break
         elif load_users == 's':

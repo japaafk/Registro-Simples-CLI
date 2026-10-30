@@ -13,7 +13,8 @@ while True:
     print('-'*25)
     print('\n')
     print('Bem vindo, qual ação gostaria de executar:')
-    escolha = input('''1- Cadastrar Usuário
+    escolha = input('''
+    1- Cadastrar Usuário
     2- Alterar Usuário
     3- Remover Usuário
     4- Listar Usuários
@@ -30,8 +31,7 @@ while True:
         case '4' | 'listar usuarios':
             ListarUsuarios()
         case '0' | 'sair':
-            print('Encerrando programa...')
+            print('\nEncerrando programa... \nObrigado por utilizar')
             break
         case _:
             print('Digite uma resposta válida!\n')
-    print('Obrigado por utilizar')
