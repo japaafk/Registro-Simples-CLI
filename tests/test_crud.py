@@ -1,3 +1,5 @@
+# PARA EXECUTAR NO TERMINAL RODE:python -m pytest tests -v
+
 import importlib
 import io
 import runpy
