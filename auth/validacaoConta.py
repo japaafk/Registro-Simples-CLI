@@ -18,5 +18,4 @@ def ValidarUsuario():
         print('\nNome de usuário ou senha inválidos. Por favor digite-os novamente!\n')
 
     print('\nValidação concluída com sucesso!\n')
-    cursor.close()
     return id_usuario
