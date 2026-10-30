@@ -29,18 +29,28 @@ def AlterarUsuario():
         match escolha:
             case '1' | 'nome de usuario':
                 try:
-                    novo_nome = input('Insira seu novo nome: ')
-                    while not novo_nome:
-                        novo_nome = input('Esse trecho não pode ser vazio.\nInsira um nome válido: ')
-                    print('\nConfirme essa alteração digitando sua senha')
-                    senha = input('Senha: ')
-                    cursor.execute('SELECT user_password FROM user WHERE id = ?', id)
-                    senha_tupla = cursor.fetchone()
-                    senha_bd = senha_tupla[0]
-                    while senha_bd != senha:
-                        senha = input('\nSenha incorreta. Digite-a novamente para que possamos confirmar as alterações \nSenha: ')
-                    print('Senha confirmada!')
-                    print('\nConfirmando alterações...')
+                    while True:
+                        novo_nome = input('Insira seu novo nome: ')
+                        while not novo_nome:
+                            novo_nome = input('Esse trecho não pode ser vazio.\nInsira um nome válido: ')
+                        print('\nConfirme essa alteração digitando sua senha')
+                        senha = input('Senha: ')
+                        cursor.execute('SELECT user_password FROM user WHERE id = ?', id)
+                        senha_tupla = cursor.fetchone()
+                        senha_bd = senha_tupla[0]
+                        while senha_bd != senha:
+                            senha = input('\nSenha incorreta. Digite-a novamente para que possamos confirmar as alterações \nSenha: ')
+                        print('Senha confirmada!')
+                        print('\nConfirmando alterações...')
+
+                        # VERIFICAÇÃO DO NOME NO BANCO DE DADOS
+                        cursor.execute('SELECT * FROM user WHERE user_name = ?', (novo_nome,))
+                        usuario_existente = cursor.fetchone()
+                        if usuario_existente is not None:
+                            print('Esse nome ja existe no nosso sistema, por favor escolha outro')
+                            continue
+
+                        break
                     cursor.execute('UPDATE user SET user_name = ? WHERE id = ?', (novo_nome, identificador))
                     conexao.commit()
                     print('Alterações salvas!')
