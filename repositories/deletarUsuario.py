@@ -7,14 +7,14 @@ def RemoverUsuario():
     cursor = conexao.cursor()
     print('\n------------------')
     print('REMOÇÃO DE USUÁRIO')
-    print('------------------\n')
+    print('------------------')
     
 
     # LISTAGEM DE USUÁRIO SEM CARREGAMENTO SIMULTÂNEO DE TODOS OS USUÁRIOS NA MEMÓRIA
     cursor.execute('SELECT user_name FROM user ORDER BY user_name;')
     contas = cursor.fetchmany(2) # PERMITE RECUPERAR UMA LISTA LIMITADA DE REGISTROS POR CHAMADA
     while True: 
-        print('Lista de usuário(s)')
+        print('\nLista de usuário(s)')
         print('------------------')
         for conta in contas:
             print(f' - {conta[0]}')
