@@ -29,12 +29,12 @@ def RemoverUsuario():
     print('\n')
     while True:
         escolha = input('Tem certeza que deseja remover um usuário do nosso banco de dados? (s/n) \nResposta: ').strip().lower()
-        if escolha != 's':
-            print('Resposta inválida. O campo precisa ser preenchido com s(sim) ou n(não)')
-            continue      
-        elif escolha == 'n':
+        if escolha == 'n':
             print('Remoção cancelada')
             break
+        elif escolha != 's':
+            print('Resposta inválida. O campo precisa ser preenchido com s(sim) ou n(não)')
+            continue 
 
         while True:
             id = ValidarUsuario()
