@@ -15,7 +15,7 @@ def ListarUsuarios():
 
     print('\nNota: digite "sair" logo abaixo para deixar de ver esse campo')
     while True:
-        tmp = input().strip().lower()
+        tmp = input('> ').strip().lower()
         if tmp == 'sair':
             break
         print('\nSair é a úncia opção valída, digite-a para deixar de ver a lista de usuários')
