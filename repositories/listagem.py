@@ -12,3 +12,4 @@ def ListarUsuarios():
     else:
         for conta in contas:
             print(f'\n - {conta[0]}') # PASSANDO POR INDEX E IGNORANDO CARACTERES DESNECESSÁRIOS
+    cursor.close()

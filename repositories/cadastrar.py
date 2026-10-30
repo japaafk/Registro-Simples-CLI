@@ -21,5 +21,6 @@ def CadastroUsuario():
     except (KeyboardInterrupt, EOFError):
         print('Cadastro cancelado pelo usuário')
     finally:
+        cursor.close()
         print('\n-----------------------------')
         print('Encerrando sessão de cadastro')

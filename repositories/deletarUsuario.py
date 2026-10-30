@@ -44,4 +44,5 @@ def RemoverUsuario():
             break
         print('\nRemoção realizada com sucesso.')
         break
+    cursor.close()
     print('\nRetornando para o menu principal...\n')

@@ -69,4 +69,5 @@ def AlterarUsuario():
                 print('Alteração cancelada')
             case _:
                     print('Forneça uma resposta válida!')
+    cursor.close()
     print('\nRetornando para o menu principal...\n')
