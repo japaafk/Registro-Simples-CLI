@@ -2,9 +2,9 @@ from database.conexao import PegarConexao
 from auth.validacaoConta import ValidarUsuario
 
 conexao = PegarConexao()
-cursor = conexao.cursor()
 
 def RemoverUsuario():
+    cursor = conexao.cursor()
     print('------------------')
     print('REMOÇÃO DE USUÁRIO')
     print('------------------\n')

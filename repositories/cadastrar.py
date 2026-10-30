@@ -1,9 +1,10 @@
 from database.conexao import PegarConexao
 
 conexao = PegarConexao()
-cursor = conexao.cursor()
 
 def CadastroUsuario():
+    cursor = conexao.cursor()
+    
     try:
         print('\nPara o cadastro de um usuário insira as seguintes informações:')
         nome = input('Nome de usuário: ')

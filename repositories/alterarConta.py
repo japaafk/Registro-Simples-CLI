@@ -2,9 +2,9 @@ from database.conexao import PegarConexao
 from auth.validacaoConta import ValidarUsuario
 
 conexao = PegarConexao()
-cursor = conexao.cursor()
 
 def AlterarUsuario():
+    cursor = conexao.cursor()
 
     print('\nTABELA DE USUÁRIOS')
     print('------------------')

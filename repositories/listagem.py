@@ -1,9 +1,9 @@
 from database.conexao import PegarConexao
 
 conexao = PegarConexao()
-cursor = conexao.cursor()
 
 def ListarUsuarios():
+    cursor = conexao.cursor()
     print('Aqui seguimos com uma lista de usuários cadastrados:')
     cursor.execute('SELECT user_name FROM user;')
     contas = cursor.fetchall() # PASSA A QUERY COMO UM RESULTADO DE UMA VARIÁVEL
