@@ -1,3 +1,4 @@
+import bcrypt
 from database.conexao import PegarConexao
 from auth.validacaoConta import ValidarUsuario
 
@@ -30,16 +31,18 @@ def AlterarUsuario():
             case '1' | 'nome de usuario':
                 try:
                     while True:
-                        novo_nome = input('Insira seu novo nome: ')
+                        novo_nome = input('Insira seu novo nome: ').strip()
                         while not novo_nome:
-                            novo_nome = input('Esse trecho não pode ser vazio.\nInsira um nome válido: ')
+                            novo_nome = input('Esse trecho não pode ser vazio.\nInsira um nome válido: ').strip()
+
                         print('\nConfirme essa alteração digitando sua senha')
                         senha = input('Senha: ')
                         cursor.execute('SELECT user_password FROM user WHERE id = ?', id)
-                        senha_tupla = cursor.fetchone()
-                        senha_bd = senha_tupla[0]
-                        while senha_bd != senha:
+                        senha_bd = cursor.fetchone()[0]
+                        
+                        while not bcrypt.checkpw(senha.encode('utf-8'), senha_bd.encode('utf-8')):
                             senha = input('\nSenha incorreta. Digite-a novamente para que possamos confirmar as alterações \nSenha: ')
+                            
                         print('Senha confirmada!')
                         print('\nConfirmando alterações...')
 
@@ -59,15 +62,19 @@ def AlterarUsuario():
                     
             case '2' | 'senha':
                 try:
-                    senha = input('Insira sua nova senha: ')
+                    senha = input('Insira sua nova senha: ').strip()
                     while len(senha) < 3:
-                        senha = input('A senha de usuário deve ter ao menos 3 caracteres.\nDigite corretamente sua nova senha: ')
+                        senha = input('A senha de usuário deve ter ao menos 3 caracteres.\nDigite corretamente sua nova senha: ').strip()
                     confirmar_alteracao = input('Deseja confirmar essas alterações? (s/n) \nResposta: ')
+
                     while confirmar_alteracao not in ('s', 'n'):
                         confirmar_alteracao = input('É necessário que seja uma resposta válida. Confirme Digitando s(sim) ou n(não) \nResposta: ')
+
                     if confirmar_alteracao == 's':
                         print('\nConfirmando alterações...')
-                        cursor.execute('UPDATE user SET user_password = ? WHERE id = ?', (senha, identificador))
+
+                        senha_hash = bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+                        cursor.execute('UPDATE user SET user_password = ? WHERE id = ?', (senha_hash, identificador))
                         conexao.commit()  
                         print('Alterações salvas!') 
                     elif confirmar_alteracao == 'n':

@@ -2,7 +2,6 @@ from repositories.cadastrar import CadastroUsuario
 from repositories.listagem import ListarUsuarios
 from repositories.alterarConta import AlterarUsuario
 from repositories.deletarUsuario import RemoverUsuario
-from repositories.encontrarSenha import acharSenha
 from database.conexao import InicializarBanco
 
 InicializarBanco()
@@ -19,7 +18,6 @@ while True:
     2- Alterar Usuário
     3- Remover Usuário
     4- Listar Usuários
-    5- Esqueci minha senha
     0- Sair\n
     Digite sua resposta: ''').lower()
 
@@ -32,9 +30,6 @@ while True:
             RemoverUsuario()
         case '4' | 'listar usuarios':
             ListarUsuarios()
-        case '5' | 'esqueci minha senha':
-            senha = acharSenha()
-            print(f'Senha encontrada: {senha}\n')
         case '0' | 'sair':
             print('\nEncerrando programa... \nObrigado por utilizar')
             break

@@ -1,20 +1,39 @@
+import bcrypt
 from database.conexao import PegarConexao
 
 conexao = PegarConexao()
+cursor = conexao.cursor()
 
-def acharSenha():
-    cursor = conexao.cursor()
+try:
+    cursor.execute("SELECT id, user_password FROM user")
+    usuarios = cursor.fetchall()
 
-    print('\nEsqueceu sua senha? Digite seu nome de usuário para encontrá-la')
-    nome_usuario = input('Nome: ')
+    for id_usuario, senha in usuarios:
 
-    cursor.execute('SELECT user_password FROM user WHERE user_name = ?', (nome_usuario,))
-    senha_encontra = cursor.fetchone()
+        # Ignora senhas que já são hashes bcrypt
+        if senha.startswith(("$2a$", "$2b$", "$2y$")):
+            continue
 
-    if senha_encontra is not None:
-        senha = senha_encontra[0]
-        cursor.close()
-        return senha
+        # Gera um hash para a senha antiga
+        senha_hash = bcrypt.hashpw(
+            senha.encode("utf-8"),
+            bcrypt.gensalt()
+        ).decode("utf-8")
 
+        # Atualiza a senha no banco de dados
+        cursor.execute("""
+            UPDATE user
+            SET user_password = ?
+            WHERE id = ?
+        """, (senha_hash, id_usuario))
+
+    conexao.commit()
+    print("Migração de senhas concluída!")
+
+except Exception:
+    conexao.rollback()
+    raise
+
+finally:
     cursor.close()
-    print('Seu usuário não foi rastreado no nosso banco, certifique-se de que digitou o nome correto')
+    conexao.close()
