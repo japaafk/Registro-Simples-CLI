@@ -17,8 +17,7 @@ def AlterarUsuario():
     print('\n')
 
     # VALIDAÇÃO DAS CREDENCIAIS DO USUÁRIO
-    id = ValidarUsuario()
-    identificador = id[0]
+    identificador = ValidarUsuario()
 
     escolha = None
     while escolha not in ('0', 'sair'):
@@ -37,7 +36,7 @@ def AlterarUsuario():
 
                         print('\nConfirme essa alteração digitando sua senha')
                         senha = input('Senha: ')
-                        cursor.execute('SELECT user_password FROM user WHERE id = ?', id)
+                        cursor.execute('SELECT user_password FROM user WHERE id = ?', (identificador,))
                         senha_bd = cursor.fetchone()[0]
                         
                         while not bcrypt.checkpw(senha.encode('utf-8'), senha_bd.encode('utf-8')):

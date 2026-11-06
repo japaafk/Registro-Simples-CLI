@@ -39,7 +39,7 @@ def RemoverUsuario():
         while True:
             id = ValidarUsuario()
             print('ID encontrado, preparando remoção de usuário...')
-            cursor.execute('DELETE FROM user WHERE id = ?;', id)
+            cursor.execute('DELETE FROM user WHERE id = ?;', (id,))
             conexao.commit()
             break
         print('\nRemoção realizada com sucesso.')
