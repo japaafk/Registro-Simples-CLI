@@ -172,20 +172,6 @@ bcrypt.checkpw(
 
 Se a verificação for bem-sucedida, `ValidarUsuario()` retorna o ID da conta. Caso contrário, solicita novamente as credenciais. Esse mesmo mecanismo confirma a senha antes de alterar o nome.
 
-### Migração de senhas antigas
-
-O arquivo [`repositories/encontrarSenha.py`](repositories/encontrarSenha.py) mantém um nome histórico: sua função atual é **migrar senhas em texto puro para hashes bcrypt**. Ele não recupera nem exibe senhas e não faz parte do menu principal.
-
-Para uma base de uma versão anterior, faça uma cópia de segurança de `database/database.db` e, com as dependências instaladas e a tabela já criada, execute na raiz do projeto:
-
-```bash
-python -m repositories.encontrarSenha
-```
-
-O script percorre os registros, ignora valores iniciados por `$2a$`, `$2b$` ou `$2y$` e transforma os demais em hashes. Ao concluir, confirma a transação; se ocorrer uma exceção, executa `rollback()`. Essa identificação por prefixo não equivale a validar integralmente um hash.
-
-O script executa a migração assim que seu módulo é carregado. A migração altera o banco local, mas não remove dados que já tenham sido registrados em commits antigos.
-
 ## Como executar
 
 Utilize **Python 3.13**, versão adotada pelo workflow do projeto, e Git para clonar o repositório. Não é necessário instalar um servidor SQLite.
