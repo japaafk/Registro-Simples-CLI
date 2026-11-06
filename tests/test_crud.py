@@ -197,7 +197,7 @@ def test_autenticar_duas_vezes(crud):
     esperado = crud.banco.execute(
         "SELECT id FROM user WHERE user_name = ?",
         ("ana",),
-    ).fetchone()
+    ).fetchone()[0]
 
     for _ in range(2):
         resultado, _ = crud.executar(
@@ -212,7 +212,7 @@ def test_credenciais_incorretas_permitem_nova_tentativa(crud):
     esperado = crud.banco.execute(
         "SELECT id FROM user WHERE user_name = ?",
         ("ana",),
-    ).fetchone()
+    ).fetchone()[0]
 
     resultado, saida = crud.executar(
         crud.auth.ValidarUsuario,
@@ -257,7 +257,7 @@ def test_trocar_senha_invalida_a_anterior(crud):
     esperado = crud.banco.execute(
         "SELECT id FROM user WHERE user_name = ?",
         ("ana",),
-    ).fetchone()
+    ).fetchone()[0]
 
     resultado, saida = crud.executar(
         crud.auth.ValidarUsuario,
@@ -333,7 +333,7 @@ def test_remover_duas_vezes(crud, monkeypatch):
     monkeypatch.setattr(
         crud.remocao,
         "ValidarUsuario",
-        lambda: next(ids),
+        lambda: next(ids)[0],
     )
 
     for _ in range(2):
