@@ -43,13 +43,14 @@ O desenvolvimento reúne práticas trabalhadas ao longo do projeto:
 | **Python** | Linguagem da aplicação e dos testes; Python 3.13 é a versão configurada na integração contínua. |
 | **SQLite / `sqlite3`** | Banco relacional local e acesso a consultas SQL pela biblioteca padrão do Python. |
 | **`pathlib`** | Localização do arquivo do banco a partir do caminho do módulo de conexão. |
+| **Regex / `re`** | Reconhecimento de comandos textuais e opções numéricas nos menus, com padrões para variações de acentuação e espaçamento e comparação sem diferenciar maiúsculas de minúsculas. |
 | **bcrypt 5.0.0** | Geração de hashes de senha, criação de salt e verificação de credenciais. |
 | **pytest 9.2.0** | Execução dos testes, fixtures, parametrização e simulação de entradas com `monkeypatch`. |
 | **Git** | Histórico de alterações, branches e merges. |
 | **GitHub** | Hospedagem do repositório e integração por pull requests. |
 | **GitHub Actions** | Execução automatizada da suíte em pull requests destinados à `main`. |
 
-As dependências externas estão fixadas em [`requirements.txt`](requirements.txt). `sqlite3` e `pathlib` fazem parte da biblioteca padrão. A aplicação utiliza funções e SQL diretamente, sem framework web ou ORM.
+As dependências externas estão fixadas em [`requirements.txt`](requirements.txt). `sqlite3`, `pathlib` e `re` fazem parte da biblioteca padrão e não exigem instalação adicional. A aplicação utiliza funções e SQL diretamente, sem framework web ou ORM.
 
 ## Funcionamento do CRUD
 
@@ -108,12 +109,13 @@ Registro-Simples-CLI/
 ├── database/
 │   ├── conexao.py            # Caminho do banco, conexões e criação da tabela
 │   └── database.db           # Arquivo SQLite persistente
+├── menu/
+│   └── opcaoMenu.py          # Reconhecimento das opções dos menus com regex
 ├── repositories/
 │   ├── cadastrar.py          # Cadastro de usuários
 │   ├── listagem.py           # Consulta e exibição dos nomes
 │   ├── alterarConta.py       # Alteração de nome e senha
-│   ├── deletarUsuario.py     # Exclusão de contas
-│   └── encontrarSenha.py     # Migração de senhas antigas para hashes
+│   └── deletarUsuario.py     # Exclusão de contas
 ├── tests/
 │   └── test_crud.py          # Suíte de testes com pytest
 ├── .gitignore
@@ -123,7 +125,7 @@ Registro-Simples-CLI/
 └── requirements.txt
 ```
 
-A organização é modular e procedural. `main.py` encaminha as escolhas às funções de `repositories/`, que concentram a interação de cada operação e suas consultas SQL. `auth/` centraliza a validação de credenciais, enquanto `database/` define o acesso ao SQLite.
+A organização é modular e procedural. `main.py` encaminha as escolhas às funções de `repositories/`, que concentram a interação de cada operação e suas consultas SQL. `menu/` centraliza o reconhecimento das opções por regex, reutilizado no menu principal e no submenu de alteração. `auth/` centraliza a validação de credenciais, enquanto `database/` define o acesso ao SQLite.
 
 ## Banco de dados
 
@@ -279,6 +281,7 @@ O projeto foi construído por etapas, combinando implementação, revisão e aju
 6. Atualização dos testes para acompanhar o uso de `sair`, novas tentativas e cancelamentos, com execução em pull requests.
 7. Inclusão temporária da consulta de senha e posterior retirada dessa funcionalidade com a adoção do bcrypt.
 8. Ajustes das consultas e dos testes para o retorno do ID inteiro na autenticação.
+9. Inclusão de regex para reconhecer comandos nos menus e ampliação dos testes de entradas textuais e numéricas.
 
 ### Branches, commits e pull requests
 
@@ -293,8 +296,9 @@ A `main` reúne as alterações integradas. O histórico utiliza branches dedica
 | `fix/delete` | Ajuste da ordem de validação na exclusão. |
 | `feature/find_password` | Recurso histórico de consulta de senha, retirado do menu posteriormente. |
 | `feature/encrypt` | Incorporação de hashes bcrypt e adaptação dos fluxos de credenciais. |
+| `feature/regex` | Reconhecimento de opções dos menus com expressões regulares, criação de `menu/opcaoMenu.py` e testes das novas entradas. |
 
-Os commits usam frequentemente prefixos como `feat:`, `fix:`, `refactor:`, `test:`, `chore:` e `style:` para indicar a finalidade da mudança. O histórico contém tanto merges pelo terminal quanto merges de pull requests no GitHub, incluindo o PR #8 da incorporação do bcrypt.
+Os commits usam frequentemente prefixos como `feat:`, `fix:`, `refactor:`, `test:`, `chore:` e `style:` para indicar a finalidade da mudança. O histórico contém tanto merges pelo terminal quanto merges de pull requests no GitHub, incluindo o PR #8 da incorporação do bcrypt e o PR #9 da inclusão de regex nos menus.
 
 O fluxo de desenvolvimento consiste em criar uma branch, implementar as alterações localmente, executar os testes, registrar commits, enviar a branch e abrir um pull request para a `main`. Após o merge no GitHub, a cópia local pode ser atualizada com:
 
@@ -311,9 +315,10 @@ O projeto tem finalidade de estudo e ainda apresenta pontos para evolução:
 
 - A senha é digitada com `input()`, portanto fica visível no terminal. A regra mínima atual é de apenas três caracteres.
 - A autenticação repete as perguntas até receber credenciais válidas, sem opção própria de cancelamento ou limite de tentativas. Com o banco vazio, esse fluxo não consegue concluir normalmente.
-- No submenu de alteração, `0` é a forma consistente de sair. As alternativas textuais de cancelamento ainda apresentam inconsistências.
+- Os comandos reconhecidos dependem dos padrões de cada menu: no submenu de alteração, `0` ou `cancelar alteração` permitem sair, inclusive com as variações previstas de maiúsculas, acentuação e espaços. O comando `sair` não é reconhecido nesse submenu.
+- O regex busca comandos dentro do texto, sem interpretar a intenção da frase. Se uma entrada contiver mais de uma opção reconhecida, a função retorna a primeira correspondência na ordem do dicionário de opções.
 - O tratamento de interrupções e o fechamento de conexões não são uniformes entre todos os módulos; algumas conexões permanecem abertas durante a sessão.
-- A suíte não cobre todos os casos de paginação, autenticação com banco vazio, migração e entradas extremas.
+- A suíte não cobre todos os casos de paginação, autenticação com banco vazio, comandos ambíguos e entradas extremas.
 
 Esses pontos delimitam o comportamento atual e oferecem oportunidades de evolução sem mudar o propósito didático do repositório.
 
