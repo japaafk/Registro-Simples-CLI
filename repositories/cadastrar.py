@@ -8,6 +8,10 @@ def CadastroUsuario():
     
     try:
         while True:
+            print('\n-------------------')
+            print('REGISTRO DE USUÁRIO')
+            print('-------------------')
+
             print('\nPara o cadastro de um usuário insira as seguintes informações:')
             nome = input('Nome de usuário: ').strip()
             while not nome:
