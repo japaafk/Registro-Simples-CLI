@@ -31,7 +31,6 @@ while True:
     }
 
     resposta_menu = opcoesMenu(escolha, opcoes)
-    # trabalhar na recepção da funcao menu e quando retornar none
 
     match resposta_menu:
         case '1':
