@@ -5,9 +5,6 @@ Execute a partir da raiz do projeto:
     python tests/test_crud.py -k test_cadastrar_usuario
     python -m pytest tests -v
     python -m pytest tests/test_crud.py::test_cadastrar_usuario -v
-
-O teste de armazenamento da senha permanece falhando enquanto a aplicação
-armazenar senhas em texto puro, inclusive no GitHub Actions.
 """
 
 import importlib
@@ -17,6 +14,7 @@ import sqlite3
 import sys
 import uuid
 from contextlib import redirect_stdout
+from functools import partial
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -223,11 +221,12 @@ def test_credenciais_incorretas_permitem_nova_tentativa(crud):
     assert "inválidos" in saida
 
 
-def test_alterar_nome(crud):
+@pytest.mark.parametrize("opcao", ["1", "Nome de usuário", " NOME  DE  USUARIO "])
+def test_alterar_nome(crud, opcao):
     crud.cadastrar()
     crud.executar(
         crud.alteracao.AlterarUsuario,
-        ["ana", "123", "1", "bia", "123", "0"],
+        ["ana", "123", opcao, "bia", "123", "0"],
     )
     assert crud.usuarios() == [("bia",)]
 
@@ -247,11 +246,12 @@ def test_alterar_duas_vezes(crud):
     assert crud.usuarios() == [("carla",)]
 
 
-def test_trocar_senha_invalida_a_anterior(crud):
+@pytest.mark.parametrize("opcao", ["2", " SENHA "])
+def test_trocar_senha_invalida_a_anterior(crud, opcao):
     crud.cadastrar()
     crud.executar(
         crud.alteracao.AlterarUsuario,
-        ["ana", "123", "2", "456", "s", "0"],
+        ["ana", "123", opcao, "456", "s", "0"],
     )
 
     esperado = crud.banco.execute(
@@ -284,6 +284,26 @@ def test_cancelar_troca_de_senha_preserva_valor(crud):
     ).fetchone()
 
     assert atual == anterior
+
+
+@pytest.mark.parametrize("opcao", ["0", " 0 ", "Cancelar alteração", "CANCELAR  ALTERACAO"])
+def test_sair_do_submenu_preserva_conta_sem_pedir_outra_entrada(crud, opcao):
+    crud.cadastrar()
+    anterior = crud.banco.execute("SELECT * FROM user").fetchone()
+
+    _, saida = crud.executar(crud.alteracao.AlterarUsuario, ["ana", "123", opcao])
+
+    assert "Forneça uma resposta válida" not in saida
+    assert "Retornando para o menu principal" in saida
+    assert crud.banco.execute("SELECT * FROM user").fetchall() == [anterior]
+
+
+@pytest.mark.parametrize("opcao", ["", "senhas", "abc2"])
+def test_submenu_rejeita_opcao_invalida_e_permite_cancelar(crud, opcao):
+    crud.cadastrar()
+    _, saida = crud.executar(crud.alteracao.AlterarUsuario, ["ana", "123", opcao, "0"])
+    assert saida.count("Forneça uma resposta válida") == 1
+    assert "Retornando para o menu principal" in saida
 
 
 def test_remover_usuario(crud):
@@ -424,12 +444,59 @@ def test_senha_nao_e_armazenada_em_texto_puro(crud):
     assert armazenada != "segredo123"
 
 
+def abrir_menu_principal():
+    runpy.run_path(str(RAIZ / "main.py"), run_name="__main__")
+
+
+@pytest.fixture
+def operacoes_chamadas(crud, monkeypatch):
+    chamadas = []
+    for modulo, nome in [
+        (crud.cadastro, "CadastroUsuario"),
+        (crud.alteracao, "AlterarUsuario"),
+        (crud.remocao, "RemoverUsuario"),
+        (crud.listagem, "ListarUsuarios"),
+    ]:
+        monkeypatch.setattr(modulo, nome, partial(chamadas.append, nome))
+    return chamadas
+
+
+@pytest.mark.parametrize(("entrada", "operacao"), [
+    ("1", "CadastroUsuario"),
+    (" CADASTRAR   USUÁRIO ", "CadastroUsuario"),
+    ("2", "AlterarUsuario"),
+    ("alterar usuario", "AlterarUsuario"),
+    ("3", "RemoverUsuario"),
+    ("Remover Usuário", "RemoverUsuario"),
+    (" 4 ", "ListarUsuarios"),
+    ("listar usuario", "ListarUsuarios"),
+    ("Listar Usuários", "ListarUsuarios"),
+    ("listar usuarios", "ListarUsuarios"),
+])
+def test_menu_aciona_operacao_escolhida(crud, operacoes_chamadas, entrada, operacao):
+    _, saida = crud.executar(abrir_menu_principal, [entrada, "0"])
+    assert operacoes_chamadas == [operacao]
+    assert "Digite uma resposta válida" not in saida
+
+
+@pytest.mark.parametrize("entrada", ["0", " 0 ", " SaIr "])
+def test_menu_encerra_sem_acionar_operacao(crud, operacoes_chamadas, entrada):
+    _, saida = crud.executar(abrir_menu_principal, [entrada])
+    assert "Encerrando programa" in saida
+    assert operacoes_chamadas == []
+
+
+@pytest.mark.parametrize("entrada", ["", "desconhecido", "10", "abc3", "sairmos"])
+def test_menu_rejeita_entrada_e_aceita_proxima_opcao(crud, operacoes_chamadas, entrada):
+    _, saida = crud.executar(abrir_menu_principal, [entrada, "4", "0"])
+    assert operacoes_chamadas == ["ListarUsuarios"]
+    assert saida.count("Digite uma resposta válida") == 1
+    assert "Encerrando programa" in saida
+
+
 def test_menu_permite_repetir_operacoes_e_sair(crud):
     _, saida = crud.executar(
-        lambda: runpy.run_path(
-            str(RAIZ / "main.py"),
-            run_name="__main__",
-        ),
+        abrir_menu_principal,
         ["4", "sair", "4", "sair", "0"],
     )
 
