@@ -9,6 +9,7 @@ O projeto implementa um **CRUD** completo: cadastrar, consultar, alterar e remov
 - [Sobre o projeto](#sobre-o-projeto)
 - [Tecnologias utilizadas](#tecnologias-utilizadas)
 - [Funcionamento do CRUD](#funcionamento-do-crud)
+- [Leitura de entradas com regex](#leitura-de-entradas-com-regex)
 - [Organização do código](#organização-do-código)
 - [Banco de dados](#banco-de-dados)
 - [Proteção de senhas com bcrypt](#proteção-de-senhas-com-bcrypt)
@@ -86,6 +87,14 @@ A nova senha também é salva como hash. A validação retorna o **ID inteiro** 
 O sistema apresenta os nomes em ordem alfabética, em grupos de dois registros por meio de `fetchmany(2)`. Responder `s` solicita a próxima página; `n` encerra a navegação pela lista.
 
 Em seguida, outra pergunta solicita a confirmação da exclusão. Responder `n` cancela a operação. Ao responder `s`, o usuário deve informar credenciais válidas, e somente a conta autenticada é removida pelo seu ID.
+
+## Leitura de entradas com regex
+
+**Regex (expressões regulares)** são padrões usados para reconhecer trechos de texto. No projeto, a função `opcoesMenu()`, em [`menu/opcaoMenu.py`](menu/opcaoMenu.py), usa o módulo `re` da biblioteca padrão do Python para interpretar as respostas do menu principal e do submenu de alteração, retornando a chave da opção correspondente ou `None` quando nenhum padrão é reconhecido.
+
+Além dos números, é possível digitar comandos como `cadastrar usuário`, `alterar usuario`, `listar usuários` e `sair`; no submenu, são reconhecidos `nome de usuário`, `senha` e `cancelar alteração`. O uso de `re.IGNORECASE` ignora diferenças entre maiúsculas e minúsculas, enquanto os padrões aceitam variações específicas de acentuação, múltiplos espaços entre palavras e, na listagem, singular ou plural.
+
+O `re.search()` encontra comandos textuais mesmo dentro de uma frase, com limites de palavra (`\b`) que impedem, por exemplo, que `sairmos` seja interpretado como `sair`. Já o `re.fullmatch()` exige que a entrada numérica inteira corresponda à opção, evitando aceitar `10` ou `abc3` como escolhas válidas. Isso torna a leitura das entradas mais flexível e consistente e centraliza a lógica de reconhecimento em uma função reutilizável. Esse recurso interpreta comandos dos menus; as regras de nome e senha continuam nos respectivos fluxos.
 
 ## Organização do código
 
