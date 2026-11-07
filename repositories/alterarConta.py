@@ -1,11 +1,16 @@
 import bcrypt
 from database.conexao import PegarConexao
 from auth.validacaoConta import ValidarUsuario
+from menu.opcaoMenu import opcoesMenu
 
 conexao = PegarConexao()
 
 def AlterarUsuario():
     cursor = conexao.cursor()
+
+    print('\n--------------------')
+    print('ALTERAÇÃO DE USUÁRIO')
+    print('--------------------')
 
     print('\nTABELA DE USUÁRIOS')
     print('------------------')
@@ -14,20 +19,28 @@ def AlterarUsuario():
     for conta in contas:
         print(f' - {conta[0]}')
 
-    print('\n')
+    print('\nValide suas credencias antes de fazer qualquer alteração')
 
     # VALIDAÇÃO DAS CREDENCIAIS DO USUÁRIO
     identificador = ValidarUsuario()
 
-    escolha = None
-    while escolha not in ('0', 'sair'):
+    resposta_menu = None
+    while resposta_menu not in ('0', 'sair'):
         print('\nIniciando processo de alteração dos dados de usuário...')
         print('Escoloha o que você gostaria de alterar:')
         print('1- Nome de usuário \n2- Senha \n0- Cancelar alteração')
-        escolha = input('\nDigite sua resposta: ').lower()
+        escolha = input('\nDigite sua resposta: ').lower().strip()
 
-        match escolha:
-            case '1' | 'nome de usuario':
+        opcoes = {
+            '1': (r'\bnome\s+de\s+usu[aá]rio\b', '1'),
+            '2': (r'\bsenha\b', '2'),
+            '0': (r'\bcancelar\s+altera[cç][aã]o\b', '0')
+        }
+
+        resposta_menu = opcoesMenu(escolha, opcoes)
+
+        match resposta_menu:
+            case '1':
                 try:
                     while True:
                         novo_nome = input('Insira seu novo nome: ').strip()
@@ -59,7 +72,7 @@ def AlterarUsuario():
                 except (KeyboardInterrupt, EOFError):
                     print('Alteração interrompida')
                     
-            case '2' | 'senha':
+            case '2':
                 try:
                     senha = input('Insira sua nova senha: ').strip()
                     while len(senha) < 3:
@@ -81,7 +94,7 @@ def AlterarUsuario():
                 except (KeyboardInterrupt, EOFError):
                     print('\nAlteração interrompida')
         
-            case '0' | 'Cancelar alteração':
+            case '0':
                 print('Alteração cancelada')
             case _:
                     print('Forneça uma resposta válida!')
